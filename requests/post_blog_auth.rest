@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkR1YW5lIiwiaWQiOiI2NjU0ZmVhOGQ3ZjQzMzBkYWQ5ODM0NzUiLCJpYXQiOjE3MTcwODYwMzN9.LVCPw6LiGt0q9bBtOvqvrTjJeAP6R9lrQxsDAJUaXIQ
+
+{
+    "title": "Testing blog creation with reference to user and jsonwebtoken Authorization",
+    "author": "Duane Gadama",
+    "url": "example.com",
+    "likes": "677"
+}
