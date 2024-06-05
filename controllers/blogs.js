@@ -9,21 +9,20 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-  const { title, url, author, likes } = request.body
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  const { title, url, author, likes } = request.body;
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
   if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
+    return response.status(401).json({ error: 'token invalid' });
   }
-  
 
   if (!title || !url) {
-    return response.status(400).json({ error: 'title or url missing' })
+    return response.status(400).json({ error: 'title or url missing' });
   }
 
-  const user = request.user
+  const user = request.user;
 
   if (!user) {
-    return response.status(400).json({ error: 'no user found in the database' })
+    return response.status(400).json({ error: 'no user found in the database' });
   }
 
   const blog = new Blog({
@@ -32,15 +31,17 @@ blogsRouter.post('/', async (request, response) => {
     author,
     likes: likes || 0,
     user: user._id
-  })
+  });
 
-  const savedBlog = await blog.save()
+  const savedBlog = await blog.save();
+  await savedBlog.populate('user', { username: 1, name: 1 })
 
-  user.blogs = user.blogs.concat(savedBlog._id)
-  await user.save()
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
 
-  response.status(201).json(savedBlog)
-})
+  response.status(201).json(savedBlog);
+});
+
 
 
 blogsRouter.delete('/:id', async (request, response) => {
@@ -66,16 +67,17 @@ blogsRouter.delete('/:id', async (request, response) => {
 
 
 blogsRouter.put('/:id', async (request, response) => {
-  const { title, url, author, likes } = request.body
+  const { title, url, author, likes, name } = request.body
 
   const blog = {
     title,
     url,
     author,
-    likes
+    likes,
+    name
   }
 
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true }).populate('user', { username: 1, name: 1 });
   if (updatedBlog) {
     response.json(updatedBlog)
   } else {
